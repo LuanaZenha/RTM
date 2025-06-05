@@ -82,40 +82,67 @@ pontos_turisticos = {
 }
 
 
-# Exibir e selecionar bairro
+
+# Escolher bairro de origem
 print("Escolha seu bairro de origem:")
 for k, (nome, _) in bairros.items():
     print(f"{k}: {nome}")
 origem_id = int(input("Digite o número do bairro: "))
 origem_nome, origem_coord = bairros.get(origem_id)
 
-# Exibir e selecionar ponto turístico
-print("\nEscolha o ponto turístico de destino:")
-for k, (nome, _) in pontos_turisticos.items():
-    print(f"{k}: {nome}")
-destino_id = int(input("Digite o número do ponto turístico: "))
-destino_nome, destino_coord = pontos_turisticos.get(destino_id)
+# Escolher quantos pontos turísticos
+while True:
+    print("\nEscolha quantos pontos deseja visitar?")
+    quantidade_pontos = int(input("1 a 3 pontos: "))
+    if 1 <= quantidade_pontos <= 3:
+        break
+    else:
+        print('Valor inválido, tente novamente.')
 
-# Baixar grafo viário
+# Selecionar os pontos turísticos
+destinos = []
+for i in range(quantidade_pontos):
+    print(f"\nEscolha o ponto turístico {i + 1}:")
+    for k, (nome, _) in pontos_turisticos.items():
+        print(f"{k}: {nome}")
+    destino_id = int(input("Digite o número do ponto turístico: "))
+    destino_nome, destino_coord = pontos_turisticos.get(destino_id)
+    destinos.append((destino_nome, destino_coord))
+
+# Baixar grafo da cidade
 print("\nCalculando rota, aguarde...")
 G = ox.graph_from_place("Maricá, Rio de Janeiro, Brazil", network_type="walk")
 
-# Encontrar nós mais próximos
+# Encontrar o nó de origem
 orig_node = ox.distance.nearest_nodes(G, X=origem_coord[1], Y=origem_coord[0])
-dest_node = ox.distance.nearest_nodes(G, X=destino_coord[1], Y=destino_coord[0])
 
-# Calcular rota com Dijkstra
-rota = nx.dijkstra_path(G, orig_node, dest_node, weight="length")
+# Lista para armazenar os caminhos e pontos do mapa
+rota_total = []
+pontos_marcados = []
 
-# Coordenadas da rota
-rota_coords = [(G.nodes[n]['y'], G.nodes[n]['x']) for n in rota]
+# Encontrar o melhor caminho para cada destino
+ponto_atual = orig_node
+for destino_nome, destino_coord in destinos:
+    destino_node = ox.distance.nearest_nodes(G, X=destino_coord[1], Y=destino_coord[0])
+    rota = nx.shortest_path(G, ponto_atual, destino_node, weight='length')
+    rota_total.extend(rota)
+    pontos_marcados.append((destino_nome, destino_coord))
+    ponto_atual = destino_node  # Atualiza para próximo ponto
 
 # Criar mapa
-mapa = folium.Map(location=origem_coord, zoom_start=13)
-folium.Marker(location=origem_coord, popup=f"Origem: {origem_nome}", icon=folium.Icon(color='green')).add_to(mapa)
-folium.Marker(location=destino_coord, popup=f"Destino: {destino_nome}", icon=folium.Icon(color='red')).add_to(mapa)
-folium.PolyLine(rota_coords, color="blue", weight=4).add_to(mapa)
+mapa = folium.Map(location=origem_coord, zoom_start=12)
 
-# Salvar mapa
-mapa.save("rota_real_marica.html")
-print("\nMapa salvo como 'rota_real_marica.html'")
+# Adicionar linha da rota
+rota_coords = [(G.nodes[n]['y'], G.nodes[n]['x']) for n in rota_total]
+folium.PolyLine(rota_coords, color='blue', weight=5, opacity=0.7).add_to(mapa)
+
+# Marcar ponto de origem
+folium.Marker(origem_coord, popup=f"Origem: {origem_nome}", icon=folium.Icon(color='green')).add_to(mapa)
+
+# Marcar pontos turísticos
+for nome, coord in pontos_marcados:
+    folium.Marker(coord, popup=nome, icon=folium.Icon(color='red')).add_to(mapa)
+
+# Salvar e exibir o mapa
+mapa.save("rota_turistica.html")
+print("\nRota salva no arquivo 'rota_turistica.html'. Abra no navegador para visualizar.")

@@ -3,16 +3,25 @@ Roteiro Turístico de Maricá
 Este projeto em Python permite ao usuário selecionar um bairro de origem e um ponto turístico de destino em Maricá (RJ) e visualizar a rota mais curta a pé entre eles em um mapa interativo.
 
 🧭 Funcionalidades
-•	Lista de bairros e pontos turísticos da cidade.
-•	Cálculo automático da rota mais curta usando algoritmo de Dijkstra.
-•	Geração de mapa interativo com Folium.
-•	Salva o resultado como um arquivo HTML visualizável em qualquer navegador.
+✅ Lista completa de bairros e pontos turísticos de Maricá.
+
+✅ Cálculo da rota mais curta utilizando o algoritmo de Dijkstra.
+
+✅ Geração de mapa interativo com a biblioteca Folium.
+
+✅ Salvamento automático do mapa em arquivo .html.
+
+✅ Preparado para futuras funcionalidades com scikit-learn.
 
 🛠️ Requisitos
 
 Instale os pacotes necessários com:
 
-pip install osmnx networkx folium
+pip install osmnx networkx folium scikit-learn
+
+Nota: O osmnx requer o geopandas, que pode necessitar de bibliotecas de sistema (ex: gdal, fiona). No Linux, instale com:
+
+sudo apt install gdal-bin libgdal-dev
 
 Nota: O OSMnx requer o pacote geopandas, que pode precisar de dependências de sistema (como gdal no Linux).
 
@@ -24,7 +33,7 @@ Nota: O OSMnx requer o pacote geopandas, que pode precisar de dependências de s
 python rota.py
 
 3.	Escolha seu bairro de origem e o ponto turístico desejado.
-4.	O mapa gerado será salvo como rota_real_marica.html.
+4.	O mapa gerado será salvo como rota_turistica.html.
 
 🗺️ Exemplo de uso
 
@@ -44,14 +53,14 @@ Digite o número do ponto turístico: 7
 
 Calculando rota, aguarde...
 
-Mapa salvo como 'rota_real_marica.html'
+Mapa salvo como 'rota_turistica.html'
 
-📁 Estrutura
+📁 Estrutura do Projeto
 
-rota.py
-README.md
-
-rota_real_marica.html (gerado após execução)
+📦 roteiro-marica/
+├── rota.py                 # Script principal do projeto
+├── README.md               # Documentação do projeto
+└── rota_turistica.html   # Mapa gerado (após execução)
 
 📌 Observações
 •	O mapa utiliza dados do OpenStreetMap.
